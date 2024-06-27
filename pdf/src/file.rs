@@ -506,6 +506,10 @@ where
         std::fs::write(path, self.storage.save(&mut self.trailer)?)?;
         Ok(())
     }
+
+    pub fn save(&mut self) -> Result<&[u8]> {
+        self.storage.save(&mut self.trailer)
+    }
 }
 
 
