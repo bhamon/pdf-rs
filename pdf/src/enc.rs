@@ -99,16 +99,16 @@ impl StreamFilter {
        let params = Primitive::Dictionary (params);
        Ok(
        match kind {
-           "ASCIIHexDecode" => StreamFilter::ASCIIHexDecode,
-           "ASCII85Decode" => StreamFilter::ASCII85Decode,
-           "LZWDecode" => StreamFilter::LZWDecode (LZWFlateParams::from_primitive(params, r)?),
-           "FlateDecode" => StreamFilter::FlateDecode (LZWFlateParams::from_primitive(params, r)?),
+           "ASCIIHexDecode" | "AHx" => StreamFilter::ASCIIHexDecode,
+           "ASCII85Decode" | "A85" => StreamFilter::ASCII85Decode,
+           "LZWDecode" | "LZW" => StreamFilter::LZWDecode (LZWFlateParams::from_primitive(params, r)?),
+           "FlateDecode" | "Fl" => StreamFilter::FlateDecode (LZWFlateParams::from_primitive(params, r)?),
            "JPXDecode" => StreamFilter::JPXDecode,
-           "DCTDecode" => StreamFilter::DCTDecode (DCTDecodeParams::from_primitive(params, r)?),
-           "CCITTFaxDecode" => StreamFilter::CCITTFaxDecode (CCITTFaxDecodeParams::from_primitive(params, r)?),
+           "DCTDecode" | "DCT" => StreamFilter::DCTDecode (DCTDecodeParams::from_primitive(params, r)?),
+           "CCITTFaxDecode" | "CCF" => StreamFilter::CCITTFaxDecode (CCITTFaxDecodeParams::from_primitive(params, r)?),
            "JBIG2Decode" => StreamFilter::JBIG2Decode(JBIG2DecodeParams::from_primitive(params, r)?),
            "Crypt" => StreamFilter::Crypt,
-           "RunLengthDecode" => StreamFilter::RunLengthDecode,
+           "RunLengthDecode" | "RL" => StreamFilter::RunLengthDecode,
            ty => bail!("Unrecognized filter type {:?}", ty),
        } 
        )
