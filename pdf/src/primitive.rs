@@ -278,7 +278,7 @@ impl PdfStream {
         writeln!(out, "stream")?;
         match self.inner {
             StreamInner::InFile { .. } => {
-                unimplemented!()
+                bail!("pdf stream serialize in file")
             }
             StreamInner::Pending { ref data } => {
                 out.write_all(data)?;

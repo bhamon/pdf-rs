@@ -180,7 +180,7 @@ impl Object for Function {
 }
 impl ObjectWrite for Function {
     fn to_primitive(&self, update: &mut impl Updater) -> Result<Primitive> {
-        unimplemented!()
+        bail!("function to primitive");
         /*
         let dict = match self {
             Function::Interpolated(parts) => {
@@ -274,7 +274,7 @@ impl SampledFunction {
                             *o += b as f32 * s;
                         }
                     }
-                    _ => unimplemented!()
+                    _ => bail!("sampled function apply x == 1")
                 }
             }
             2 => match self.order {
@@ -300,7 +300,7 @@ impl SampledFunction {
                     add(i0, j1, g0 * f1);
                     add(j0, j1, f0 * f1);
                 }
-                _ => unimplemented!()
+                _ => bail!("sampled function apply x == 2")
             }
             3 => match self.order {
                 Interpolation::Linear => {
@@ -331,7 +331,7 @@ impl SampledFunction {
                     add(i0, j1, j2, g0 * f1 * f2);
                     add(j0, j1, j2, f0 * f1 * f2);
                 }
-                _ => unimplemented!()
+                _ => bail!("sampled function apply x == 3")
             }
             n => bail!("Order {}", n)
         }

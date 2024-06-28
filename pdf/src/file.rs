@@ -250,7 +250,7 @@ where
                     parse(slice, resolve, flags)
                 }
                 XRef::Free {..} => err!(PdfError::FreeObject {obj_nr: r.id}),
-                XRef::Promised => unimplemented!(),
+                XRef::Promised => bail!("resolve ref promised"),
                 XRef::Invalid => err!(PdfError::NullRef {obj_nr: r.id}),
             }
         }

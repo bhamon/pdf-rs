@@ -396,7 +396,7 @@ pub fn fax_decode(data: &[u8], params: &CCITTFaxDecodeParams) -> Result<Vec<u8>>
         }
         Ok(buf)
     } else {
-        unimplemented!()
+        bail!("fax decode k={}", params.k)
     }
 }
 
@@ -466,8 +466,7 @@ pub fn decode(data: &[u8], filter: &StreamFilter) -> Result<Vec<u8>> {
         StreamFilter::FlateDecode(ref params) => flate_decode(data, params),
         StreamFilter::RunLengthDecode => run_length_decode(data),
         StreamFilter::DCTDecode(ref params) => dct_decode(data, params),
-
-        _ => bail!("unimplemented {filter:?}"),
+        _ => bail!("decode stream filter: {:?}", filter),
     }
 }
 
@@ -477,7 +476,7 @@ pub fn encode(data: &[u8], filter: &StreamFilter) -> Result<Vec<u8>> {
         StreamFilter::ASCII85Decode => Ok(encode_85(data)),
         StreamFilter::LZWDecode(ref params) => lzw_encode(data, params),
         StreamFilter::FlateDecode (ref _params) => Ok(flate_encode(data)),
-        _ => unimplemented!(),
+        _ => bail!("encode stream filter: {:?}", filter),
     }
 }
 

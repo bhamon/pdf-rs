@@ -730,7 +730,7 @@ pub fn serialize_ops(mut ops: &[Op]) -> Result<Vec<u8>> {
                 }
                 writeln!(f, "] TJ")?;
             },
-            Op::InlineImage { image: _ } => unimplemented!(),
+            Op::InlineImage { image: _ } => bail!("serialize op inline image"),
             Op::XObject { ref name } => {
                 serialize_name(name, f)?;
                 writeln!(f, " Do")?;

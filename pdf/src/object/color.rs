@@ -174,7 +174,7 @@ impl ObjectWrite for ColorSpace {
             }
             ref p => {
                 dbg!(p);
-                unimplemented!()
+                bail!("color space to primitive: {:?}", p);
             }
         }
     }

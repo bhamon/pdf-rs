@@ -166,7 +166,7 @@ impl ObjectWrite for Font {
             FontData::TrueType(_) => FontType::TrueType,
             FontData::CIDFontType0(_) => FontType::CIDFontType0,
             FontData::CIDFontType2(_) => FontType::CIDFontType2,
-            FontData::Other(_) => bail!("unimplemented")
+            FontData::Other(_) => bail!("to primitive subtype other")
         };
         dict.insert("Subtype", subtype.to_primitive(update)?);
         dict.insert("Type", Name::from("Font"));
