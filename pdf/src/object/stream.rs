@@ -123,7 +123,10 @@ impl<I: ObjectWrite> Stream<I> {
                     StreamFilter::JBIG2Decode(ref p) => Some(p.to_primitive(update)?),
                     _ => None
                 } {
-                    assert!(params.is_none());
+                    // assert!(params.is_none());
+                    if !params.is_none() {
+                        bail!("unsupported multiple stream filters");
+                    }
                     params = Some(para);
                 }
             }
