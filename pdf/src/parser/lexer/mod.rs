@@ -19,6 +19,7 @@ pub struct Lexer<'a> {
     pos: usize,
     buf: &'a [u8],
     file_offset: usize,
+    tolerant: bool
 }
 
 // find the position where condition(data[pos-1]) == false and condition(data[pos]) == true
@@ -52,14 +53,16 @@ impl<'a> Lexer<'a> {
         Lexer {
             pos: 0,
             buf,
-            file_offset: 0
+            file_offset: 0,
+            tolerant: true // TODO: bind ?
         }
     }
     pub fn with_offset(buf: &'a [u8], file_offset: usize) -> Lexer<'a> {
         Lexer {
             pos: 0,
             buf,
-            file_offset
+            file_offset,
+            tolerant: true // TODO: bind ?
         }
     }
 
@@ -84,10 +87,15 @@ impl<'a> Lexer<'a> {
         } else if b0 == b'\r' {
             let &b1 = self.buf.get(pos + 7).ok_or(PdfError::EOF)?;
             if b1 != b'\n' {
-                bail!("invalid whitespace following 'stream'");
-                // bail!("invalid whitespace following 'stream'");
+                if self.tolerant {
+                    warn!("invalid whitespace following 'stream', allowing tolerant parsing");
+                    self.pos = pos + 7;
+                } else {
+                    bail!("invalid whitespace following 'stream'");
+                }
+            } else {
+                self.pos = pos + 8;
             }
-            self.pos = pos + 8;
         } else {
             bail!("invalid whitespace");
         }
