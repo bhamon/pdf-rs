@@ -1,6 +1,7 @@
 use crate::error::*;
 use crate::parser::Lexer;
 use crate::parser::read_xref_and_trailer_at;
+use crate::xref::XRef;
 use crate::xref::XRefTable;
 use crate::primitive::Dictionary;
 use crate::object::*;
@@ -107,6 +108,80 @@ pub trait Backend: Sized {
         }
         Ok((refs, trailer))
     }
+
+    fn restore_xref_table(&self) -> Result<XRefTable> {
+        let start_offset = t!(self.locate_start_offset());
+        println!("start_offset={start_offset}");
+        let mut lexer = Lexer::new(t!(self.read(..)));
+        let mut objects = Vec::new();
+
+        // Ignore errors on purpose
+        let _ = (|| -> Result<()> { loop {
+            // FIXME: dirty, needs enhancement
+            // count "<<" & ">>" markers ?
+            // or fix original code below
+            try_opt!(lexer.seek_substr("obj"));
+            t!(lexer.back());
+            let w2 = t!(lexer.back());
+            let w1 = t!(lexer.back());
+            let offset = lexer.get_pos();
+            println!("w1={}", w1.to::<ObjNr>().unwrap());
+            println!("w2={}", w2.to::<ObjNr>().unwrap());
+            try_opt!(lexer.seek_substr("endobj"));
+            // let end_pos = lexer.get_pos();
+
+            // let offset = lexer.get_pos();
+            // let w1 = t!(lexer.next());
+            // let w2 = t!(lexer.next());
+            // let w3 = t!(lexer.next_expect("obj"));
+            // try_opt!(lexer.seek_substr("endobj"));
+
+            objects.push((t!(w1.to::<ObjNr>()), t!(w2.to::<GenNr>()), offset));
+        }})();
+
+        dbg!(&objects);
+    
+        objects.sort_unstable();
+        // let first_id = objects.first().map(|&(n, _, _)| n).unwrap_or(0);
+        let highest_id = objects.last().map(|&(n, _, _)| n).unwrap_or(0);
+        
+        let mut xref = XRefTable::new(highest_id);
+        let mut free_xrefs = vec![];
+        // add obj 0 (must be free)
+        free_xrefs.push((0, XRef::Free { next_obj_nr: 0, gen_nr: 0xffff }));
+        
+        let mut last_id = 0u64;
+        for &(obj_nr, gen_nr, offset) in objects.iter() {
+            // Prepare free entries
+            for n in last_id+1..obj_nr {
+                free_xrefs.push((n, XRef::Free { next_obj_nr: obj_nr, gen_nr: 0 }));
+            }
+            if obj_nr == last_id {
+                warn!("duplicate obj_nr {}", obj_nr);
+                continue;
+            }
+            xref.set(obj_nr, XRef::Raw {
+                pos: offset - start_offset,
+                gen_nr
+            });
+            // dbg!(&xref);
+            last_id = obj_nr;
+        }
+
+        // TODO: test
+        for (i, (n, r)) in free_xrefs.iter().enumerate() {
+            // find next free obj and adjust next_obj_nr if necessary
+            let free_xref = if let Some((next_obj_nr, _)) = free_xrefs.get(i+1) {
+                XRef::Free { next_obj_nr: *next_obj_nr, gen_nr: r.get_gen_nr() }
+            } else {
+                *r
+            };
+            xref.set(*n, free_xref);
+        }
+
+        Ok(xref)
+    }
+
 }
 
 

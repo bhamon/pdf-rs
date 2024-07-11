@@ -262,7 +262,7 @@ pub enum ScanItem {
     Trailer(Dictionary)
 }
 
-struct StorageResolver<'a, B, OC, SC, L> {
+pub struct StorageResolver<'a, B, OC, SC, L> {
     storage: &'a Storage<B, OC, SC, L>,
     chain: Mutex<Vec<PlainRef>>,
 }
@@ -514,11 +514,11 @@ where
 
 
 pub struct FileOptions<'a, OC, SC, L> {
-    oc: OC,
-    sc: SC,
-    log: L,
-    password: &'a [u8],
-    parse_options: ParseOptions,
+    pub oc: OC,
+    pub sc: SC,
+    pub log: L,
+    pub password: &'a [u8],
+    pub parse_options: ParseOptions,
 }
 impl FileOptions<'static, NoCache, NoCache, NoLog> {
     pub fn uncached() -> Self {

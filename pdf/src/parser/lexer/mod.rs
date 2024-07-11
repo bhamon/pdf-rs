@@ -139,7 +139,7 @@ impl<'a> Lexer<'a> {
 
     /// skip whitespaces and return the position of the first non-whitespace character
     #[inline]
-    fn skip_whitespace(&self, pos: usize) -> Result<usize> {
+    pub fn skip_whitespace(&self, pos: usize) -> Result<usize> {
         // Move away from eventual whitespace
         let pos = boundary(self.buf, pos, is_whitespace);
         if pos >= self.buf.len() {
