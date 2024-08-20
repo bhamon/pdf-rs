@@ -103,7 +103,7 @@ pub fn serialize_name(s: &str, out: &mut impl io::Write) -> Result<()> {
     for b in s.chars() {
         match b {
             '\\' | '(' | ')' => write!(out, r"\")?,
-            c if c > '~' => panic!("only ASCII"),
+            c if c > '~' => bail!("only ASCII"),
             _ => ()
         }
         write!(out, "{}", b)?;
