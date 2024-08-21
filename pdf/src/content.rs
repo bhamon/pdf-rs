@@ -742,11 +742,11 @@ pub fn serialize_ops(mut ops: &[Op]) -> Result<Vec<u8>> {
 }
 
 impl Content {
-    pub fn from_ops(operations: Vec<Op>) -> Self {
-        let data = serialize_ops(&operations).unwrap();
-        Content {
+    pub fn from_ops(operations: Vec<Op>) -> Result<Self> {
+        let data = serialize_ops(&operations)?;
+        Ok(Content {
             parts: vec![Stream::new((), data)]
-        }
+        })
     }
 }
 

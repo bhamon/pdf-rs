@@ -118,7 +118,7 @@ impl CatalogBuilder {
         }, update)?;
 
         for (page, promise) in self.pages.into_iter().zip(kids_promise) {
-            let content = Content::from_ops(page.ops);
+            let content = Content::from_ops(page.ops)?;
             let resources = update.create(page.resources)?.into();
             let page = Page {
                 parent: tree.clone(),

@@ -114,7 +114,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     ]);
 
     let mut page2: Page = (*page).clone();
-    page2.contents = Some(Content::from_ops(ops));
+    page2.contents = Some(Content::from_ops(ops)?);
     page2.resources = Some(file.create(resources2)?.into());
 
     file.update(page.get_ref().get_inner(), page2)?;
